@@ -55,9 +55,9 @@ struct command_t
 };
 
 /* Function prototypes */
-int parseCommand(char *, struct command_t *);
 void printPrompt();
 void readCommand(char *);
+int parseCommand(char *, struct command_t *);
 
 int main(int argc, char *argv[])
 {
@@ -139,7 +139,7 @@ void printPrompt()
    /* Build the prompt string to have the machine name,
     * current directory, or other desired information
     */
-   promptString = ...; /* EDIT THIS LINE */
+   char promptString[] = "linux(djp111)|>";
    printf("%s ", promptString);
 }
 
