@@ -19,7 +19,7 @@
 //
 //
 //
-// Signed:_____________________________________ Date:_____________
+// Signed:_________Daniel Proben___________ Date:____10/06/2023___
 
 // 3460:426 Lab 1 - Basic C shell rev. 9/10/2020
 
@@ -74,11 +74,74 @@ int main(int argc, char *argv[])
       parseCommand(cmdLine, &command);
       command.argv[command.argc] = NULL;
 
+      printf("%s\n", command.name);
+      // printf("%s\n", command.argv[1]); // how you get the arguments to the command (index argv)
       /*
          TODO: if the command is one of the shortcuts you're testing for
         either execute it directly or build a new command structure to
         execute next
       */
+      switch (*command.name)
+      {
+      case 'C':
+         // C file1 file2
+         // Copy; create file2, copy all bytes of file1 to file2 without deleting file1.
+         printf("Command C\n");
+         break;
+
+      case 'D':
+         // D file
+         // Delete the named file.
+         printf("Command D\n");
+         break;
+
+      case 'E':
+         // E comment
+         // Echo; display comment on screen followed by a new line (multiple spaces/tabs may be reduced to a single space); if no argument simply issue a new prompt.
+         printf("Command E\n");
+         break;
+
+      case 'H':
+         // H
+         // Help; display the user manual, described below.
+         printf("Command H\n");
+         break;
+
+      case 'L':
+         // L
+         // List the contents of the current directory; see below.
+         printf("Command L\n");
+         break;
+
+      case 'M':
+         // M file
+         // Make; create the named text file by launching a text editor.
+         system("nano"); // open it with a specific file name from argv
+         break;
+
+      case 'P':
+         printf("Command P\n");
+         break;
+
+      case 'Q':
+         printf("Command Q\n");
+         break;
+
+      case 'S':
+         printf("Command S\n");
+         break;
+
+      case 'W':
+         printf("Command W\n");
+         break;
+
+      case 'X':
+         printf("Command X\n");
+         break;
+
+      default:
+         break;
+      }
 
       /* Create a child process to execute the command */
       if ((pid = fork()) == 0)
