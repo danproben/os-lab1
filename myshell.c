@@ -87,10 +87,6 @@ int main(int argc, char *argv[])
       {
          // C file1 file2
          // Copy; create file2, copy all bytes of file1 to file2 without deleting file1.
-         char myCommand[MAX_LINE_LEN] = "cp ";
-         strcat(myCommand, command.argv[1]);
-         strcat(myCommand, " ");
-         strcat(myCommand, command.argv[2]);
          command.name = "cp";
          break;
       }
@@ -98,15 +94,13 @@ int main(int argc, char *argv[])
       {
          // D file
          // Delete the named file.
-         char myCommand[MAX_LINE_LEN] = "rm ";
-         strcat(myCommand, command.argv[1]);
          command.name = "rm";
          break;
       }
       case 'E':
          // E comment
          // Echo; display comment on screen followed by a new line (multiple spaces/tabs may be reduced to a single space); if no argument simply issue a new prompt.
-         printf("Command E\n");
+         printf("%s\n", command.argv[1]);
          break;
 
       case 'H':
@@ -154,14 +148,12 @@ int main(int argc, char *argv[])
       /* Create a child process to execute the command */
       if ((pid = fork()) == 0)
       {
-         printf("Hello from child\n");
          /* Child executing command */
          execvp(command.name, command.argv);
          /* TODO: what happens if you enter an incorrect command? */
       }
       else
       {
-         printf("Hello from parent\n");
          /* Wait for the child to terminate */
          wait(&status);
       }
