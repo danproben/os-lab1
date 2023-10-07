@@ -41,6 +41,7 @@
 #include <unistd.h>
 #include <stdbool.h>
 #include <sys/wait.h>
+#include <string.h>
 
 #define MAX_ARGS 64
 #define MAX_ARG_LEN 16
@@ -74,7 +75,6 @@ int main(int argc, char *argv[])
       parseCommand(cmdLine, &command);
       command.argv[command.argc] = NULL;
 
-      printf("%s\n", command.name);
       // printf("%s\n", command.argv[1]); // how you get the arguments to the command (index argv)
       /*
          TODO: if the command is one of the shortcuts you're testing for
@@ -84,17 +84,25 @@ int main(int argc, char *argv[])
       switch (*command.name)
       {
       case 'C':
+      {
          // C file1 file2
          // Copy; create file2, copy all bytes of file1 to file2 without deleting file1.
-         printf("Command C\n");
+         char myCommand[MAX_LINE_LEN] = "cp ";
+         strcat(myCommand, command.argv[1]);
+         strcat(myCommand, " ");
+         strcat(myCommand, command.argv[2]);
+         command.name = "cp";
          break;
-
+      }
       case 'D':
+      {
          // D file
          // Delete the named file.
-         printf("Command D\n");
+         char myCommand[MAX_LINE_LEN] = "rm ";
+         strcat(myCommand, command.argv[1]);
+         command.name = "rm";
          break;
-
+      }
       case 'E':
          // E comment
          // Echo; display comment on screen followed by a new line (multiple spaces/tabs may be reduced to a single space); if no argument simply issue a new prompt.
@@ -146,12 +154,17 @@ int main(int argc, char *argv[])
       /* Create a child process to execute the command */
       if ((pid = fork()) == 0)
       {
+         printf("Hello from child\n");
          /* Child executing command */
          execvp(command.name, command.argv);
          /* TODO: what happens if you enter an incorrect command? */
       }
-      /* Wait for the child to terminate */
-      wait(&status); /* EDIT THIS LINE */
+      else
+      {
+         printf("Hello from parent\n");
+         /* Wait for the child to terminate */
+         wait(&status);
+      }
    }
 
    /* Shell termination */
