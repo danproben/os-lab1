@@ -100,7 +100,7 @@ int main(int argc, char *argv[])
       case 'E':
          // E comment
          // Echo; display comment on screen followed by a new line (multiple spaces/tabs may be reduced to a single space); if no argument simply issue a new prompt.
-         printf("%s\n", command.argv[1]);
+         command.name = "echo";
          break;
 
       case 'H':
@@ -151,6 +151,7 @@ int main(int argc, char *argv[])
          /* Child executing command */
          execvp(command.name, command.argv);
          /* TODO: what happens if you enter an incorrect command? */
+         // The execvp function will fail with an error and start executing below it. Handle this error here
       }
       else
       {
