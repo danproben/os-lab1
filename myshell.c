@@ -75,7 +75,6 @@ int main(int argc, char *argv[])
       parseCommand(cmdLine, &command);
       command.argv[command.argc] = NULL;
 
-      // printf("%s\n", command.argv[1]); // how you get the arguments to the command (index argv)
       /*
          TODO: if the command is one of the shortcuts you're testing for
         either execute it directly or build a new command structure to
@@ -84,37 +83,46 @@ int main(int argc, char *argv[])
       switch (*command.name)
       {
       case 'C':
-      {
          // C file1 file2
          // Copy; create file2, copy all bytes of file1 to file2 without deleting file1.
          command.name = "cp";
          break;
-      }
       case 'D':
-      {
          // D file
          // Delete the named file.
          command.name = "rm";
          break;
-      }
       case 'E':
          // E comment
          // Echo; display comment on screen followed by a new line (multiple spaces/tabs may be reduced to a single space); if no argument simply issue a new prompt.
          command.name = "echo";
          break;
-
       case 'H':
+
          // H
          // Help; display the user manual, described below.
-         printf("Command H\n");
+         {
+            int c;
+            FILE *file;
+            file = fopen("manual.txt", "r");
+            if (file)
+            {
+               while ((c = getc(file)) != EOF)
+               {
+                  putchar(c);
+               }
+               fclose(file);
+            }
+         }
          break;
 
       case 'L':
+      {
          // L
          // List the contents of the current directory; see below.
-         printf("Command L\n");
-         break;
-
+         printf("\n");
+      }
+      break;
       case 'M':
          // M file
          // Make; create the named text file by launching a text editor.
@@ -127,10 +135,6 @@ int main(int argc, char *argv[])
 
       case 'Q':
          printf("Command Q\n");
-         break;
-
-      case 'S':
-         printf("Command S\n");
          break;
 
       case 'W':
@@ -152,6 +156,7 @@ int main(int argc, char *argv[])
          execvp(command.name, command.argv);
          /* TODO: what happens if you enter an incorrect command? */
          // The execvp function will fail with an error and start executing below it. Handle this error here
+         exit(1);
       }
       else
       {
