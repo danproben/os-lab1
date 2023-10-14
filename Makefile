@@ -1,3 +1,5 @@
 make: myshell.c
-	clang myshell.c -o myshell
-	./myshell
+	@gcc myshell.c -o myshell
+
+run:
+	@./myshell

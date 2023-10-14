@@ -10,4 +10,3 @@
     Q               - Quit the shell.
     W               - Wipe; clear the screen.
     X program       - Execute the named program.
-

@@ -42,6 +42,7 @@
 #include <stdbool.h>
 #include <sys/wait.h>
 #include <string.h>
+#include <signal.h>
 
 #define MAX_ARGS 64
 #define MAX_ARG_LEN 16
@@ -74,12 +75,8 @@ int main(int argc, char *argv[])
       readCommand(cmdLine);
       parseCommand(cmdLine, &command);
       command.argv[command.argc] = NULL;
+      bool exitFlag = false;
 
-      /*
-         TODO: if the command is one of the shortcuts you're testing for
-        either execute it directly or build a new command structure to
-        execute next
-      */
       switch (*command.name)
       {
       case 'C':
@@ -87,65 +84,100 @@ int main(int argc, char *argv[])
          // Copy; create file2, copy all bytes of file1 to file2 without deleting file1.
          command.name = "cp";
          break;
+
       case 'D':
          // D file
          // Delete the named file.
          command.name = "rm";
          break;
+
       case 'E':
          // E comment
          // Echo; display comment on screen followed by a new line (multiple spaces/tabs may be reduced to a single space); if no argument simply issue a new prompt.
          command.name = "echo";
-         break;
-      case 'H':
-
-         // H
-         // Help; display the user manual, described below.
+         if (!command.argv[1])
          {
-            int c;
-            FILE *file;
-            file = fopen("manual.txt", "r");
-            if (file)
-            {
-               while ((c = getc(file)) != EOF)
-               {
-                  putchar(c);
-               }
-               fclose(file);
-            }
+            continue;
          }
+         break;
+
+      case 'H':
+         // H
+         // Help; display the user manual.
+         command.name = "cat";
+         command.argv[1] = "manual.txt";
          break;
 
       case 'L':
       {
          // L
-         // List the contents of the current directory; see below.
+         // List the contents of the current directory
+         // Skip a line
          printf("\n");
+
+         // fork a child to handle the pwd command
+         command.name = "pwd";
+         if ((pid = fork()) == 0)
+         {
+            /* Child executing command */
+            command.argv[0][0] = '\0';
+            execvp(command.name, command.argv);
+            // The execvp function will fail with an error and start executing below it. Handle this error here
+            exit(1);
+         }
+         else
+         {
+            /* Wait for the child to terminate */
+            wait(&status);
+            printf("\n");
+
+            // set the command struct for execution on the next fork
+            command.name = "ls";
+            command.argv[0] = "l";
+         }
       }
       break;
+
       case 'M':
          // M file
          // Make; create the named text file by launching a text editor.
-         system("nano"); // open it with a specific file name from argv
+         command.name = "nano";
          break;
 
       case 'P':
-         printf("Command P\n");
+         command.name = "cat";
+         if (!command.argv[1])
+         {
+            continue;
+         }
          break;
 
       case 'Q':
-         printf("Command Q\n");
+         command.name = "exit";
+         exitFlag = true;
+         command.argv[0][0] = '\0';
          break;
 
       case 'W':
-         printf("Command W\n");
+         command.name = "clear";
+         command.argv[0][0] = '\0';
          break;
 
       case 'X':
-         printf("Command X\n");
-         break;
+      {
+         char destination[MAX_ARG_LEN + 2] = "./";
+         strcat(destination, command.argv[1]);
+         command.name = destination;
+         command.argv[0][0] = '\0';
+      }
+      break;
 
       default:
+         break;
+      }
+
+      if (exitFlag)
+      {
          break;
       }
 
@@ -154,9 +186,11 @@ int main(int argc, char *argv[])
       {
          /* Child executing command */
          execvp(command.name, command.argv);
-         /* TODO: what happens if you enter an incorrect command? */
-         // The execvp function will fail with an error and start executing below it. Handle this error here
-         exit(1);
+         exit(EXIT_FAILURE);
+      }
+      else if (pid == -1)
+      {
+         return (EXIT_FAILURE);
       }
       else
       {
@@ -166,7 +200,7 @@ int main(int argc, char *argv[])
    }
 
    /* Shell termination */
-   printf("\n\n shell: Terminating successfully\n");
+   printf("\n\nshell: Terminating successfully\n");
    return 0;
 }
 
