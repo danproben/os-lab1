@@ -1,5 +1,7 @@
                                     Help Menu
 ---------------------------------------------------------------------------------------------
+To use this shell, simply type on of the commands into the terminal followed by the [ENTER] key. Supply arguments where necessary.
+
     C file1 file2   - Copy; create file2, copy all bytes of file1 to file2 without deleting file1.
     D file          - Delete the named file.
     E comment       - Echo; display comment on screen followed by a new line (multiple spaces/tabs may be reduced to a single space); if no argument simply issue a new prompt.
@@ -9,4 +11,4 @@
     P file          - Print; display the contents of the named file on screen.
     Q               - Quit the shell.
     W               - Wipe; clear the screen.
-    X program       - Execute the named program.
+    X program       - Execute the named program. This will be a file with a .o or .out file extension.

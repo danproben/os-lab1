@@ -77,6 +77,7 @@ int main(int argc, char *argv[])
       command.argv[command.argc] = NULL;
       bool exitFlag = false;
 
+      // in most cases, the command.name entered by the user can simply be replaced with the unix equivalent to be executed by the child
       switch (*command.name)
       {
       case 'C':
@@ -105,7 +106,8 @@ int main(int argc, char *argv[])
          // H
          // Help; display the user manual.
          command.name = "cat";
-         command.argv[1] = "manual.txt";
+         command.argv[1] = "help.txt";
+
          break;
 
       case 'L':
@@ -131,7 +133,7 @@ int main(int argc, char *argv[])
             wait(&status);
             printf("\n");
 
-            // set the command struct for execution on the next fork
+            // set the command struct for execution on the next fork on line 189
             command.name = "ls";
             command.argv[0] = "l";
          }
@@ -145,6 +147,7 @@ int main(int argc, char *argv[])
          break;
 
       case 'P':
+         // Print; display the contents of the named file on screen.
          command.name = "cat";
          if (!command.argv[1])
          {
@@ -153,18 +156,21 @@ int main(int argc, char *argv[])
          break;
 
       case 'Q':
+         // Quit the shell.
          command.name = "exit";
          exitFlag = true;
          command.argv[0][0] = '\0';
          break;
 
       case 'W':
+         // Wipe; clear the screen.
          command.name = "clear";
          command.argv[0][0] = '\0';
          break;
 
       case 'X':
       {
+         // Execute the named program.
          char destination[MAX_ARG_LEN + 2] = "./";
          strcat(destination, command.argv[1]);
          command.name = destination;
@@ -176,6 +182,7 @@ int main(int argc, char *argv[])
          break;
       }
 
+      // if the user entered Q, the exit flag was set to true and we can exit the loop and end the process without creating another child process
       if (exitFlag)
       {
          break;
